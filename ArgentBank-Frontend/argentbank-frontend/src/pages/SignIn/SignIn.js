@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './SignIn.css';
 
-const SignIn = () => {
+const SignIn = ({ setIsLoggedIn, setUserName }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -11,6 +11,7 @@ const SignIn = () => {
   const handleSignIn = async (event) => {
     event.preventDefault();
     setError(null);
+    console.log('Tentative de connexion avec :', { username, password });
 
     try {
       const response = await fetch('http://localhost:3001/api/v1/user/login', {
@@ -22,17 +23,35 @@ const SignIn = () => {
       });
 
       const data = await response.json();
+      console.log('Réponse reçue complète :', data);
+      console.log('Contenu de body :', data.body);
+
 
       if (response.ok) {
-        localStorage.setItem('token', data.token);
-        navigate('/user'); // Rediriger vers la page du profil de l'utilisateur
+        console.log('Connexion réussie');
+
+        const token = data.body.token; 
+
+        if (token) {
+          localStorage.setItem('token', token);
+          console.log('Token stocké :', localStorage.getItem('token'));
+          setIsLoggedIn(true);
+          setUserName(username);
+          navigate('/user'); 
+        } else {
+          console.error('Erreur : le token est manquant dans la réponse.');
+          setError('Le token est manquant dans la réponse du serveur.');
+        }
       } else {
+        console.error('Erreur de connexion :', data.message);
         setError(data.message);
       }
     } catch (err) {
+      console.error('Erreur lors de la connexion :', err);
       setError('Une erreur est survenue lors de la connexion. Veuillez réessayer.');
     }
   };
+
 
   return (
     <main className="main bg-dark">
@@ -48,6 +67,7 @@ const SignIn = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              autoComplete="username"
             />
           </div>
           <div className="input-wrapper">
@@ -58,6 +78,7 @@ const SignIn = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password"
             />
           </div>
           <div className="input-remember">

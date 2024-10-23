@@ -1,12 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Account from '../../components/Account/Account';
-import './Profile.css'
+import './Profile.css';
 
 const Profile = () => {
+  const [profile, setProfile] = useState({});
+  const token = localStorage.getItem('token')?.trim();
+
+  useEffect(() => {
+    if (!token) {
+      console.error('Token is missing');
+      return;
+    }
+
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/v1/user/profile', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          setProfile(data.body);
+        } else {
+          console.error('Erreur lors de la récupération du profil:', data.message);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération du profil:', error);
+      }
+    };
+
+    fetchProfile();
+  }, [token]);
+
   return (
     <main className="main bg-dark">
       <div className="header">
-        <h1>Welcome back<br />Tony Jarvis!</h1>
+        <h1>Welcome back<br />{profile.firstName} {profile.lastName}!</h1>
         <button className="edit-button">Edit Name</button>
       </div>
       <h2 className="sr-only">Accounts</h2>

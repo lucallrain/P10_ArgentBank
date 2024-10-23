@@ -18,21 +18,26 @@ module.exports.createUser = async (req, res) => {
 }
 
 module.exports.loginUser = async (req, res) => {
-  let response = {}
+  let response = {};
+  console.log('Requête de connexion reçue avec les données :', req.body);
 
   try {
-    const responseFromService = await userService.loginUser(req.body)
-    response.status = 200
-    response.message = 'User successfully logged in'
-    response.body = responseFromService
+    const responseFromService = await userService.loginUser(req.body);
+    response.status = 200;
+    response.message = 'User successfully logged in';
+    response.body = {
+      token: responseFromService.token, // Assurez-vous que le token est bien accessible ici
+    };
   } catch (error) {
-    console.error('Error in loginUser (userController.js)')
-    response.status = 400
-    response.message = error.message
+    console.error('Erreur dans loginUser (userController.js)', error);
+    response.status = 400;
+    response.message = error.message;
   }
 
-  return res.status(response.status).send(response)
-}
+  return res.status(response.status).send(response);
+};
+
+
 
 module.exports.getUserProfile = async (req, res) => {
   let response = {}

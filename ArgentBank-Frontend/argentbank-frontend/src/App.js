@@ -5,16 +5,31 @@ import Footer from './components/Footer/Footer';
 import Home from './pages/Home/Home';
 import SignIn from './pages/SignIn/SignIn';
 import Profile from './pages/Profile/Profile';
-import '@fortawesome/fontawesome-free/css/all.min.css'; 
+import useAuth from './components/useAuth/useAuth';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const App = () => {
+  const { isLoggedIn, userName, setIsLoggedIn, setUserName } = useAuth();
+
   return (
     <Router>
-      <Header isLoggedIn={false} userName="Tony" />
+      <Header isLoggedIn={isLoggedIn} userName={userName} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/user" element={<Profile />} />
+        <Route
+          path="/sign-in"
+          element={<SignIn setIsLoggedIn={setIsLoggedIn} setUserName={setUserName} />}
+        />
+        <Route
+          path="/user"
+          element={
+            isLoggedIn ? (
+              <Profile />
+            ) : (
+              <SignIn setIsLoggedIn={setIsLoggedIn} setUserName={setUserName} />
+            )
+          }
+        />
       </Routes>
       <Footer />
     </Router>

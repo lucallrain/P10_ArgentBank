@@ -9,7 +9,11 @@ module.exports.validateToken = (req, res, next) => {
       throw new Error('Token is missing from header')
     }
 
-    const userToken = req.headers.authorization.split('Bearer')[1].trim()
+    const userToken = req.headers.authorization && req.headers.authorization.split(' ')[1];
+if (!userToken) {
+  throw new Error('Token is missing or malformed');
+}
+
     const decodedToken = jwt.verify(
       userToken,
       process.env.SECRET_KEY || 'default-secret-key'
