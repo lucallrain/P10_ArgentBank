@@ -71,7 +71,6 @@ module.exports.loginUser = async serviceData => {
       { expiresIn: '1d' }
     );
 
-    // Assurez-vous que le token est bien renvoyé directement dans le body
     return {
       token,
     };

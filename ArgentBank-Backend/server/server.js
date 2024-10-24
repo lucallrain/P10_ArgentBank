@@ -11,20 +11,15 @@ dotEnv.config()
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// Connect to the database
 dbConnection()
 
-// Handle CORS issues
 app.use(cors())
 
-// Request payload middleware
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-// Handle custom routes
 app.use('/api/v1/user', require('./routes/userRoutes'))
 
-// API Documentation
 if (process.env.NODE_ENV !== 'production') {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 }

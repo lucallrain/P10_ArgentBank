@@ -26,7 +26,7 @@ module.exports.loginUser = async (req, res) => {
     response.status = 200;
     response.message = 'User successfully logged in';
     response.body = {
-      token: responseFromService.token, // Assurez-vous que le token est bien accessible ici
+      token: responseFromService.token, 
     };
   } catch (error) {
     console.error('Erreur dans loginUser (userController.js)', error);

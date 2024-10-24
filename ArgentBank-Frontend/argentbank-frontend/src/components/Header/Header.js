@@ -4,13 +4,12 @@ import logo from '../../assets/img/argentBankLogo.webp';
 
 const Header = ({ isLoggedIn, userName, setIsLoggedIn }) => {
   const location = useLocation();
-  const navigate = useNavigate(); // Pour la redirection après déconnexion
+  const navigate = useNavigate(); 
 
   const handleSignOut = () => {
-    // Supprimer le token du localStorage et mettre à jour l'état de connexion
     localStorage.removeItem('token');
-    setIsLoggedIn(false); // Mettre à jour l'état de connexion
-    navigate('/sign-in'); // Rediriger vers la page Sign In après déconnexion
+    setIsLoggedIn(false); 
+    navigate('/sign-in'); 
   };
 
   return (

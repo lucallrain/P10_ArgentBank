@@ -5,11 +5,13 @@ import Footer from './components/Footer/Footer';
 import Home from './pages/Home/Home';
 import SignIn from './pages/SignIn/SignIn';
 import Profile from './pages/Profile/Profile';
-import useAuth from './components/useAuth/useAuth';
+import UserProfileEdit from './components/UserProfileEdit/UserProfileEdit';
+import  useAuth  from './components/useAuth/useAuth'; 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const App = () => {
-  const { isLoggedIn, userName, setIsLoggedIn, setUserName } = useAuth();
+  const { isLoggedIn = false, userName = '', setIsLoggedIn, setUserName } = useAuth() || {};
+
 
   return (
     <Router>
@@ -25,6 +27,17 @@ const App = () => {
           element={
             isLoggedIn ? (
               <Profile />
+            ) : (
+              <SignIn setIsLoggedIn={setIsLoggedIn} setUserName={setUserName} />
+            )
+          }
+        />
+        {/* Route pour la page de modification du profil */}
+        <Route
+          path="/edit-profile"
+          element={
+            isLoggedIn ? (
+              <UserProfileEdit />
             ) : (
               <SignIn setIsLoggedIn={setIsLoggedIn} setUserName={setUserName} />
             )

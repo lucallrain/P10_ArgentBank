@@ -20,9 +20,11 @@ const useAuth = () => {
           if (response.ok) {
             setUserName(data.body.userName);
             setIsLoggedIn(true);
+          } else {
+            console.error('Erreur lors de la récupération du profil :', data.message);
           }
         } catch (error) {
-          console.error('Erreur lors de la récupération du profil:', error);
+          console.error('Erreur lors de la récupération du profil :', error);
         }
       };
       fetchProfile();

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Account from '../../components/Account/Account';
 import './Profile.css';
 
 const Profile = () => {
   const [profile, setProfile] = useState({});
   const token = localStorage.getItem('token')?.trim();
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     if (!token) {
@@ -36,11 +38,17 @@ const Profile = () => {
     fetchProfile();
   }, [token]);
 
+  const handleEditClick = () => {
+    navigate('/edit-profile', { state: { profile, } });
+  };
+
   return (
     <main className="main bg-dark">
       <div className="header">
         <h1>Welcome back<br />{profile.firstName} {profile.lastName}!</h1>
-        <button className="edit-button">Edit Name</button>
+        <button className="edit-button" onClick={handleEditClick}>
+          Edit Name
+        </button>
       </div>
       <h2 className="sr-only">Accounts</h2>
       <Account title="Argent Bank Checking (x8349)" amount="$2,082.79" description="Available Balance" />
