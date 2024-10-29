@@ -51,34 +51,47 @@ module.exports.getUserProfile = async serviceData => {
 };
 
 
-module.exports.loginUser = async serviceData => {
+module.exports.loginUser = async (serviceData) => {
   try {
-    const user = await User.findOne({ userName: serviceData.userName });
+    if (!serviceData.userName) {
+      throw new Error("Le champ userName ou email est requis");
+    }
+
+    let user;
+
+    // Vérifie si l'entrée semble être un email
+    if (serviceData.userName.includes('@')) {
+      user = await User.findOne({ email: serviceData.userName });
+    } else {
+      const foundUser = await User.findOne({ userName: serviceData.userName });
+      if (foundUser) {
+        user = await User.findOne({ email: foundUser.email });
+      }
+    }
 
     if (!user) {
-      throw new Error('User not found!');
+      throw new Error("User not found!");
     }
 
     const isValid = await bcrypt.compare(serviceData.password, user.password);
-
     if (!isValid) {
-      throw new Error('Password is invalid');
+      throw new Error("Password is invalid");
     }
 
     const token = jwt.sign(
       { id: user._id },
-      process.env.SECRET_KEY || 'default-secret-key',
-      { expiresIn: '1d' }
+      process.env.SECRET_KEY || "default-secret-key",
+      { expiresIn: "1d" }
     );
 
-    return {
-      token,
-    };
+    return { token };
   } catch (error) {
-    console.error('Error in userService.js', error);
+    console.error("Erreur dans loginUser:", error);
     throw new Error(error);
   }
 };
+
+
 
 
 

@@ -15,10 +15,16 @@
 }
 
 .main-nav-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
   text-decoration: none;
   margin-right: 0.5rem;
 }
-
+.main-nav-item i {
+  margin-top: 2px;
+}
 .main-nav-item:hover {
   text-decoration: underline;
 }
@@ -31,6 +37,11 @@
 .main-nav-logo-image {
   max-width: 100%;
   width: 200px;
+}
+
+.RightPart{
+  display: flex;
+  flex-direction: row;
 }
 
 .sr-only {
