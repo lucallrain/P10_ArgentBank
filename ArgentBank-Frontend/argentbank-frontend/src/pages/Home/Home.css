@@ -28,6 +28,10 @@
   font-size: 0.9rem;
 }
 
+.features{
+  justify-content: center;
+  align-items: center;
+}
 @media (min-width: 920px) {
   .hero {
     height: 400px;

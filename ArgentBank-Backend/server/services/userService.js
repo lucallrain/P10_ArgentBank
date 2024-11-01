@@ -50,7 +50,6 @@ module.exports.getUserProfile = async serviceData => {
   }
 };
 
-
 module.exports.loginUser = async (serviceData) => {
   try {
     if (!serviceData.userName) {
@@ -59,7 +58,6 @@ module.exports.loginUser = async (serviceData) => {
 
     let user;
 
-    // Vérifie si l'entrée semble être un email
     if (serviceData.userName.includes('@')) {
       user = await User.findOne({ email: serviceData.userName });
     } else {
@@ -91,34 +89,34 @@ module.exports.loginUser = async (serviceData) => {
   }
 };
 
-
-
-
-
-
-
-
-
-
-module.exports.updateUserProfile = async serviceData => {
+module.exports.updateUserProfile = async (serviceData) => {
   try {
-    const jwtToken = serviceData.headers.authorization.split('Bearer')[1].trim()
-    const decodedJwtToken = jwt.decode(jwtToken)
-    const user = await User.findOneAndUpdate(
-      { _id: decodedJwtToken.id },
-      {
-        userName: serviceData.body.userName
-      },
-      { new: true }
-    )
+    const userId = serviceData.userId;
+    const { userName } = serviceData.body;
 
-    if (!user) {
-      throw new Error('User not found!')
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { userName },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw new Error("User not found");
     }
 
-    return user.toObject()
+    return updatedUser.toObject();
   } catch (error) {
-    console.error('Error in userService.js', error)
-    throw new Error(error)
+    console.error("Error in updateUserProfile - userService.js", error);
+    throw new Error(error);
   }
-}
+};
+
+
+
+
+
+
+
+
+
+

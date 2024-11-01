@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import authReducer from './slices/authSlice';
-import userReducer from './slices/userSlices'; 
+import userReducer from './slices/userSlices';
 import {
   FLUSH,
   REHYDRATE,
@@ -13,15 +13,18 @@ import {
 } from 'redux-persist';
 
 const persistConfig = {
-  key: 'auth',
+  key: 'root',
   storage,
+  whitelist: ['auth', 'user'],
 };
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
+const persistedUserReducer = persistReducer(persistConfig, userReducer);
 
 const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
+    user: persistedUserReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

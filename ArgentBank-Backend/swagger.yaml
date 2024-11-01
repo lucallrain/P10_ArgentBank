@@ -33,6 +33,7 @@ paths:
           description: Invalid Fields
         '500':
           description: Internal Server Error
+
   /user/signup:
     post:
       tags:
@@ -57,6 +58,7 @@ paths:
           description: Invalid Fields
         '500':
           description: Internal Server Error
+
   /user/profile:
     get:
       security:
@@ -65,11 +67,9 @@ paths:
         - User Module
       summary: User Profile API
       description: API for fetching a user profile
-      #produces:
-       # - application/json
       responses:
         '200':
-          description: User profile retrieved successully
+          description: User profile retrieved successfully
           schema:
             $ref: '#/definitions/ApiResponse'
         '400':
@@ -94,18 +94,102 @@ paths:
         - application/json
       responses:
         '200':
-          description: User profile retrieved successully
+          description: User profile updated successfully
           schema:
             $ref: '#/definitions/ApiResponse'
         '400':
           description: Invalid Fields
         '500':
           description: Internal Server Error
+
+  /transactions:
+    get:
+      tags:
+        - Transactions Module
+      summary: Get transactions for the current month
+      description: Retrieve all transactions for the logged-in user, grouped by account, for the current month.
+      parameters:
+        - name: accountId
+          in: query
+          required: false
+          description: ID of the account to filter transactions by specific account.
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successful response with list of transactions grouped by account
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Transaction'
+        '401':
+          description: Unauthorized access
+        '404':
+          description: No transactions found for the current month
+
+  /transactions/{transactionId}:
+    get:
+      tags:
+        - Transactions Module
+      summary: Get transaction details
+      description: Retrieve detailed information for a specific transaction.
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: Unique identifier of the transaction to retrieve details for.
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successful response with transaction details
+          schema:
+            $ref: '#/definitions/Transaction'
+        '401':
+          description: Unauthorized access
+        '404':
+          description: Transaction not found
+
+    patch:
+      tags:
+        - Transactions Module
+      summary: Update transaction information
+      description: Modify specific details of a transaction (e.g., category or notes).
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          description: Unique identifier of the transaction to update.
+          type: string
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      requestBody:
+        description: Transaction details to update
+        required: true
+        schema:
+          $ref: '#/definitions/TransactionUpdate'
+      responses:
+        '200':
+          description: Transaction successfully updated
+          schema:
+            $ref: '#/definitions/Transaction'
+        '400':
+          description: Bad request, invalid data provided
+        '401':
+          description: Unauthorized access
+        '404':
+          description: Transaction not found
+
 securityDefinitions:
   Bearer:
     type: apiKey
     name: Authorization
     in: header
+
 definitions:
   User:
     properties:
@@ -124,6 +208,7 @@ definitions:
       userName:
         type: string
         description: user public name
+
   Login:
     properties:
       email:
@@ -132,6 +217,7 @@ definitions:
       password:
         type: string
         description: user password
+
   ApiResponse:
     type: object
     properties:
@@ -146,13 +232,52 @@ definitions:
             type: string
           email:
             type: string
+
   LoginResponse:
     type: object
     properties:
       token:
         type: string
+
   UserProfile:
     type: object
     properties:
       userName:
         type: string
+
+  Transaction:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Unique identifier of the transaction
+      accountId:
+        type: string
+        description: Unique identifier of the account associated with the transaction
+      date:
+        type: string
+        format: date-time
+        description: Date and time of the transaction
+      amount:
+        type: number
+        format: float
+        description: Amount of the transaction
+      description:
+        type: string
+        description: Brief description or label of the transaction
+      category:
+        type: string
+        description: Category assigned to the transaction
+      notes:
+        type: string
+        description: Optional notes about the transaction
+
+  TransactionUpdate:
+    type: object
+    properties:
+      category:
+        type: string
+        description: New category for the transaction
+      notes:
+        type: string
+        description: Updated notes for the transaction

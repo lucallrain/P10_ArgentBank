@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../redux/slices/authSlice';
@@ -10,12 +10,19 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { isLoggedIn, userName } = useSelector((state) => state.auth);
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const userName = useSelector((state) => state.user.userData.userName);
+
+  
 
   const handleSignOut = () => {
     dispatch(logout());
     navigate('/sign-in', { replace: true });
   };
+
+  useEffect(() => {
+
+  }, [userName]);
 
   return (
     <nav className="main-nav">
