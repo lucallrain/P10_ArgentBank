@@ -5,10 +5,10 @@ import { updateUsername } from '../../redux/slices/userSlices';
 import Account from '../Account/Account';
 import './UserProfileEdit.css';
 
-const UserProfileEdit = () => {
+const UserProfileEdit = ({ updateUserName }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Initialize useDispatch
+  const dispatch = useDispatch();
 
   const [userData, setUserData] = useState(location.state?.profile || {
     userName: '',
@@ -62,6 +62,7 @@ const UserProfileEdit = () => {
       const data = await response.json();
       if (response.ok) {
         dispatch(updateUsername(userData.userName)); 
+        updateUserName(userData.userName); // Mettre à jour userName dans App
         navigate('/user'); 
       } else {
         console.error('Erreur lors de la mise à jour du username', data.message);
@@ -81,7 +82,7 @@ const UserProfileEdit = () => {
   if (isLoading) return <div>Chargement...</div>;
 
   return (
-    <div className='user_profile__page'>
+    <div className="user_profile__page">
       <div className="user-profile-edit">
         <h2>Edit User Info</h2>
         <div className="form-group">

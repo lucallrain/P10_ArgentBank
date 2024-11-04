@@ -1,28 +1,18 @@
-import React, { useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../../redux/slices/authSlice';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/img/argentBankLogo.webp';
 import './Header.css';
 
-const Header = () => {
-  const location = useLocation();
+const Header = ({ userName }) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const userName = useSelector((state) => state.user.userData.userName);
-
-  
 
   const handleSignOut = () => {
-    dispatch(logout());
+    localStorage.removeItem('token');
+    localStorage.removeItem('userName');
     navigate('/sign-in', { replace: true });
   };
 
-  useEffect(() => {
-
-  }, [userName]);
+  const isLoggedIn = !!localStorage.getItem('token');
 
   return (
     <nav className="main-nav">

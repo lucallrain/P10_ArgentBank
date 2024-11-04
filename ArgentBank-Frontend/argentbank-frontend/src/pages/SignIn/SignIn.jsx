@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { login } from '../../redux/slices/authSlice';
 import './SignIn.css';
 
 const SignIn = () => {
@@ -9,7 +7,6 @@ const SignIn = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const handleSignIn = async (event) => {
     event.preventDefault();
@@ -28,20 +25,19 @@ const SignIn = () => {
 
       if (response.ok) {
         const token = data.body.token;
-
         if (token) {
           localStorage.setItem('token', token);
           localStorage.setItem('userName', username);
-          dispatch(login({ userName: username, token }));
-          navigate('/user');
+          navigate('/user', { replace: true });
         } else {
           setError('Le token est manquant dans la réponse du serveur.');
         }
       } else {
-        setError(data.message);
+        setError(data.message || 'Erreur lors de la connexion');
       }
     } catch (err) {
       setError('Une erreur est survenue lors de la connexion. Veuillez réessayer.');
+      console.error('Error during sign-in:', err);
     }
   };
 

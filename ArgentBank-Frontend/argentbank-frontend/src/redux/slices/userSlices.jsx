@@ -3,10 +3,11 @@ import axios from 'axios';
 
 export const updateUsername = createAsyncThunk(
   'user/updateUsername',
-  async (newUsername, { getState, rejectWithValue }) => {
+  async (newUsername, { rejectWithValue }) => {
     try {
-      const state = getState();
-      const token = state.auth.token; 
+      const token = localStorage.getItem('token'); 
+      if (!token) throw new Error('No token available'); 
+      
       const response = await axios.put(
         'http://localhost:3001/api/v1/user/profile',
         { userName: newUsername },
@@ -27,9 +28,13 @@ const userSlice = createSlice({
     error: null,
   },
   reducers: {
-    clearUsername(state) {
+    clearUsername: (state) => {
       state.userData.userName = '';
       localStorage.removeItem('userName');
+    },
+    setUsername: (state, action) => {
+      state.userData.userName = action.payload;
+      localStorage.setItem('userName', action.payload);
     }
   },
   extraReducers: (builder) => {
@@ -47,8 +52,8 @@ const userSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload || "Error updating username";
       });
-  }
+  },
 });
 
-export const { clearUsername } = userSlice.actions;
+export const { clearUsername, setUsername } = userSlice.actions;
 export default userSlice.reducer;
