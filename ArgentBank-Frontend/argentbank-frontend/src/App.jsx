@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import Home from './pages/Home/Home';
@@ -9,29 +10,22 @@ import UserProfileEdit from './components/UserProfileEdit/UserProfileEdit';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const App = () => {
-  const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
-  const updateUserName = (name) => {
-    setUserName(name);
-    localStorage.setItem('userName', name);
-  };
+
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
 
   return (
     <Router>
-      <Header userName={userName} />
+      <Header />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/sign-in" element={<SignIn updateUserName={updateUserName} />} />
+        <Route path="/sign-in" element={<SignIn />} />
         <Route
           path="/user"
-          element={localStorage.getItem('token') ? <Profile /> : <Navigate to="/sign-in" replace />}
+          element={isAuthenticated ? <Profile /> : <Navigate to="/sign-in" replace />}
         />
         <Route
           path="/edit-profile"
-          element={localStorage.getItem('token') ? (
-            <UserProfileEdit updateUserName={updateUserName} />
-          ) : (
-            <Navigate to="/sign-in" replace />
-          )}
+          element={isAuthenticated ? <UserProfileEdit /> : <Navigate to="/sign-in" replace />}
         />
       </Routes>
       <Footer />

@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux'; 
-import { updateUsername } from '../../redux/slices/userSlices'; 
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux'; 
+import { setUsername } from '../../redux/slices/userSlices';
 import Account from '../Account/Account';
 import './UserProfileEdit.css';
 
-const UserProfileEdit = ({ updateUserName }) => {
-  const location = useLocation();
+const UserProfileEdit = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [userData, setUserData] = useState(location.state?.profile || {
-    userName: '',
-    firstName: '',
-    lastName: ''
-  });
-  const [isLoading, setIsLoading] = useState(!location.state?.profile);
+  // Récupérer les informations de l'utilisateur depuis Redux
+  const token = useSelector((state) => state.user.token);
+  const username = useSelector((state) => state.user.username);
+  const firstName = useSelector((state) => state.user.firstName);
+  const lastName = useSelector((state) => state.user.lastName);
+
+  // État local pour le champ modifiable `username`
+  const [newUsername, setNewUsername] = useState(username);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (!location.state?.profile) {
+    if (!username && token) {
       const fetchUserData = async () => {
         try {
-          const token = localStorage.getItem('token');
           const response = await fetch('http://localhost:3001/api/v1/user/profile', {
             method: 'GET',
             headers: {
@@ -32,8 +32,7 @@ const UserProfileEdit = ({ updateUserName }) => {
           });
           const data = await response.json();
           if (response.ok) {
-            setUserData(data.body);
-            setIsLoading(false);
+            dispatch(setUsername(data.body.userName));
           } else {
             console.error('Erreur lors de la récupération des données utilisateur', data.message);
           }
@@ -42,27 +41,23 @@ const UserProfileEdit = ({ updateUserName }) => {
         }
       };
       fetchUserData();
-    } else {
-      setIsLoading(false);
     }
-  }, [location.state?.profile]);
+  }, [username, token, dispatch]);
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:3001/api/v1/user/profile', {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userName: userData.userName })
+        body: JSON.stringify({ userName: newUsername })
       });
       const data = await response.json();
       if (response.ok) {
-        dispatch(updateUsername(userData.userName)); 
-        updateUserName(userData.userName); // Mettre à jour userName dans App
+        dispatch(setUsername(newUsername));
         navigate('/user'); 
       } else {
         console.error('Erreur lors de la mise à jour du username', data.message);
@@ -74,12 +69,11 @@ const UserProfileEdit = ({ updateUserName }) => {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserData(prevState => ({ ...prevState, [name]: value }));
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !isSaving) {
+      handleSave();
+    }
   };
-
-  if (isLoading) return <div>Chargement...</div>;
 
   return (
     <div className="user_profile__page">
@@ -90,17 +84,18 @@ const UserProfileEdit = ({ updateUserName }) => {
           <input
             type="text"
             name="userName"
-            value={userData.userName}
-            onChange={handleChange}
+            value={newUsername}
+            onChange={(e) => setNewUsername(e.target.value)}
+            onKeyDown={handleKeyDown} // Écoute de la touche "Entrée"
           />
         </div>
         <div className="form-group fixed">
           <label>First Name</label>
-          <input type="text" value={userData.firstName} readOnly />
+          <input type="text" value={firstName} readOnly />
         </div>
         <div className="form-group fixed">
           <label>Last Name</label>
-          <input type="text" value={userData.lastName} readOnly />
+          <input type="text" value={lastName} readOnly />
         </div>
         
         <div className="button-group">

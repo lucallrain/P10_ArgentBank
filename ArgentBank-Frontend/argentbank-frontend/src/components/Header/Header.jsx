@@ -1,18 +1,47 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../redux/slices/userSlices';
 import logo from '../../assets/img/argentBankLogo.webp';
 import './Header.css';
 
-const Header = ({ userName }) => {
+const Header = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
+  // Utiliser des sélecteurs séparés pour éviter la recréation d'un nouvel objet
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+  const username = useSelector((state) => state.user.username);
 
   const handleSignOut = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userName');
+    dispatch(logout());
     navigate('/sign-in', { replace: true });
   };
 
-  const isLoggedIn = !!localStorage.getItem('token');
+  // Fonction pour générer les liens dynamiques en fonction de l'état d'authentification
+  const renderAuthLinks = () => {
+    if (isAuthenticated) {
+      return (
+        <>
+          <Link to="/user" className="main-nav-item" aria-label="User Profile">
+            <i className="fa fa-user-circle" aria-hidden="true"></i>
+            {username}
+          </Link>
+          <Link to="/sign-in" className="main-nav-item" onClick={handleSignOut} aria-label="Sign Out">
+            <i className="fa fa-sign-out" aria-hidden="true"></i>
+            Sign Out
+          </Link>
+        </>
+      );
+    } else {
+      return (
+        <Link to="/sign-in" className="main-nav-item" aria-label="Sign In">
+          <i className="fa fa-user-circle" aria-hidden="true"></i>
+          Sign In
+        </Link>
+      );
+    }
+  };
 
   return (
     <nav className="main-nav">
@@ -21,23 +50,7 @@ const Header = ({ userName }) => {
         <h1 className="sr-only">Argent Bank</h1>
       </Link>
       <div className="RightPart">
-        {isLoggedIn ? (
-          <>
-            <Link to="/user" className="main-nav-item">
-              <i className="fa fa-user-circle"></i>
-              {userName}
-            </Link>
-            <Link to="/sign-in" className="main-nav-item" onClick={handleSignOut}>
-              <i className="fa fa-sign-out"></i>
-              Sign Out
-            </Link>
-          </>
-        ) : (
-          <Link to="/sign-in" className="main-nav-item">
-            <i className="fa fa-user-circle"></i>
-            Sign In
-          </Link>
-        )}
+        {renderAuthLinks()}
       </div>
     </nav>
   );

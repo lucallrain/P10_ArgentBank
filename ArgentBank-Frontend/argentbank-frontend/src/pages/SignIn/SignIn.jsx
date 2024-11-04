@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { setToken } from '../../redux/slices/userSlices';
 import './SignIn.css';
 
 const SignIn = () => {
@@ -7,6 +9,15 @@ const SignIn = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/user', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSignIn = async (event) => {
     event.preventDefault();
@@ -26,9 +37,7 @@ const SignIn = () => {
       if (response.ok) {
         const token = data.body.token;
         if (token) {
-          localStorage.setItem('token', token);
-          localStorage.setItem('userName', username);
-          navigate('/user', { replace: true });
+          dispatch(setToken(token));
         } else {
           setError('Le token est manquant dans la réponse du serveur.');
         }
@@ -36,8 +45,8 @@ const SignIn = () => {
         setError(data.message || 'Erreur lors de la connexion');
       }
     } catch (err) {
-      setError('Une erreur est survenue lors de la connexion. Veuillez réessayer.');
       console.error('Error during sign-in:', err);
+      setError('Une erreur est survenue lors de la connexion. Veuillez réessayer.');
     }
   };
 

@@ -1,59 +1,45 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice } from '@reduxjs/toolkit';
 
-export const updateUsername = createAsyncThunk(
-  'user/updateUsername',
-  async (newUsername, { rejectWithValue }) => {
-    try {
-      const token = localStorage.getItem('token'); 
-      if (!token) throw new Error('No token available'); 
-      
-      const response = await axios.put(
-        'http://localhost:3001/api/v1/user/profile',
-        { userName: newUsername },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      return response.data.body;
-    } catch (error) {
-      return rejectWithValue(error.response ? error.response.data : "Network error");
-    }
-  }
-);
+const token = localStorage.getItem('token');
+
+const initialState = {
+  token: token || null,
+  isAuthenticated: !!token, 
+  username: '',
+  firstName: '',
+  lastName: '',
+};
 
 const userSlice = createSlice({
   name: 'user',
-  initialState: {
-    userData: { userName: localStorage.getItem('userName') || '' },
-    status: 'idle',
-    error: null,
-  },
+  initialState,
   reducers: {
-    clearUsername: (state) => {
-      state.userData.userName = '';
-      localStorage.removeItem('userName');
+    setToken: (state, action) => {
+      if (action.payload) {
+        state.token = action.payload;
+        state.isAuthenticated = true;
+        localStorage.setItem('token', action.payload); 
+      }
     },
     setUsername: (state, action) => {
-      state.userData.userName = action.payload;
-      localStorage.setItem('userName', action.payload);
-    }
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(updateUsername.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(updateUsername.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.userData = action.payload;
-        localStorage.setItem('userName', action.payload.userName);
-      })
-      .addCase(updateUsername.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload || "Error updating username";
-      });
+      state.username = action.payload;
+    },
+    setUserProfile: (state, action) => {
+      const { username, firstName, lastName } = action.payload;
+      state.username = username;
+      state.firstName = firstName;
+      state.lastName = lastName;
+    },
+    logout: (state) => {
+      state.token = null;
+      state.isAuthenticated = false;
+      state.username = '';
+      state.firstName = '';
+      state.lastName = '';
+      localStorage.removeItem('token'); 
+    },
   },
 });
 
-export const { clearUsername, setUsername } = userSlice.actions;
+export const { setToken, setUsername, setUserProfile, logout } = userSlice.actions;
 export default userSlice.reducer;
