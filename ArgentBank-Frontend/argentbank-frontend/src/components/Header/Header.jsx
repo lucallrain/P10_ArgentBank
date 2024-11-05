@@ -8,8 +8,6 @@ import './Header.css';
 const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
-  // Utiliser des sélecteurs séparés pour éviter la recréation d'un nouvel objet
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
   const username = useSelector((state) => state.user.username);
 
@@ -18,7 +16,6 @@ const Header = () => {
     navigate('/sign-in', { replace: true });
   };
 
-  // Fonction pour générer les liens dynamiques en fonction de l'état d'authentification
   const renderAuthLinks = () => {
     if (isAuthenticated) {
       return (

@@ -8,14 +8,10 @@ import './UserProfileEdit.css';
 const UserProfileEdit = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // Récupérer les informations de l'utilisateur depuis Redux
   const token = useSelector((state) => state.user.token);
   const username = useSelector((state) => state.user.username);
   const firstName = useSelector((state) => state.user.firstName);
   const lastName = useSelector((state) => state.user.lastName);
-
-  // État local pour le champ modifiable `username`
   const [newUsername, setNewUsername] = useState(username);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -86,7 +82,7 @@ const UserProfileEdit = () => {
             name="userName"
             value={newUsername}
             onChange={(e) => setNewUsername(e.target.value)}
-            onKeyDown={handleKeyDown} // Écoute de la touche "Entrée"
+            onKeyDown={handleKeyDown}
           />
         </div>
         <div className="form-group fixed">
