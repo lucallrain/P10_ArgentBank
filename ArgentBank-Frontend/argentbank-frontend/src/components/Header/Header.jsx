@@ -10,7 +10,6 @@ const Header = () => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
   const username = useSelector((state) => state.user.username);
-
   const handleSignOut = () => {
     dispatch(logout());
     navigate('/sign-in', { replace: true });
