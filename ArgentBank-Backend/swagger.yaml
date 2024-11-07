@@ -8,6 +8,7 @@ info:
   version: 1.0.0
 schemes:
   - http
+
 securityDefinitions:
   Bearer:
     in: header
@@ -104,7 +105,7 @@ paths:
       summary: Signup
       tags:
         - User Module
-  /user/{userID}/transactions:
+  /user/transactions:
     get:
       description: Retrieve all transactions for the logged-in user, grouped by account, for the current month.
       parameters:
@@ -129,7 +130,7 @@ paths:
       summary: Get transactions for the current month
       tags:
         - Transactions Module
-  /user/{userID}/transactions/{transactionID}:
+  /user/transactions/{transactionID}:
     get:
       description: Retrieve detailed information for a specific transaction.
       parameters:
@@ -182,6 +183,7 @@ paths:
       summary: Update transaction information
       tags:
         - Transactions Module
+
 definitions:
   ApiResponse:
     properties:
